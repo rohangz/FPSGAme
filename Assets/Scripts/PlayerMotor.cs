@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
+
 public class PlayerMotor : MonoBehaviour {
     [SerializeField]
    private Camera cam;
@@ -13,11 +14,14 @@ public class PlayerMotor : MonoBehaviour {
     private Vector3 velocity = Vector3.zero;
     private Vector3 rotation = Vector3.zero;
     private Vector3 cameraRotation = Vector3.zero;
+	private Rigidbody rb;
 
-    private Rigidbody rb;
-    private void Start()
+	private Vector3 thrusterForce=Vector3.zero;
+
+	private void Start()
     {
         rb = GetComponent<Rigidbody>();
+
     }
     public void CameraRotate(Vector3 _cameraRotation)
     {
@@ -32,6 +36,7 @@ public class PlayerMotor : MonoBehaviour {
     {
         PerformMovement();
         PerformRotation();
+
     }
     private void PerformMovement()
     {
@@ -39,6 +44,11 @@ public class PlayerMotor : MonoBehaviour {
         {
             rb.MovePosition(rb.position+velocity*Time.deltaTime);
         }
+		if (thrusterForce != Vector3.zero)
+		{
+		
+			rb.AddForce (thrusterForce*Time.deltaTime,ForceMode.Acceleration);
+		}
     }
     public void Rotate(Vector3 _rotation)
     {
@@ -52,5 +62,14 @@ public class PlayerMotor : MonoBehaviour {
             cam.transform.Rotate(-cameraRotation);
         }
     }
+
+
+
+	public void applyThrusterForce(Vector3 _thrusterForce)
+	{
+		thrusterForce = _thrusterForce;
+	}
+
+
 
 }
