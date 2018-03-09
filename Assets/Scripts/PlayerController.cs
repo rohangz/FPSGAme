@@ -24,24 +24,30 @@ public class PlayerController : MonoBehaviour
 	private ConfigurableJoint joint;
 
 
-
-
+	[SerializeField]
+	private float thrusterPower = 3.0f;
 
 
 	private PlayerMotor motor;
 
 
+	private void Awake()
+	{
+
+
+	}
+
     private void Start()
     {
         motor = GetComponent<PlayerMotor>();
 		joint = GetComponent<ConfigurableJoint> ();
-		setJointSettings (jointSpring);
+
+	//	setJointSettings (jointSpring);
     }
 
 
     private void Update()
     {
-        //Calculate movement velocity as 3D vector
         float _xMove = Input.GetAxisRaw("Horizontal");
         float _zMove = Input.GetAxisRaw("Vertical");
 
@@ -49,11 +55,11 @@ public class PlayerController : MonoBehaviour
         Vector3 _moveVertical = transform.forward * _zMove;
 
 
-        //final movement vector
+    
         Vector3 _velocity = (_moveHorizontal + _moveVertical).normalized * speed;
 
         motor.Move(_velocity);
-        //Calculate rotation as  3D vector
+      
         float _yRot = Input.GetAxisRaw("Mouse X");
 
 		Vector3 _rotation = new Vector3(0,_yRot,0)*horizontalLookSensitivity;
@@ -67,27 +73,39 @@ public class PlayerController : MonoBehaviour
 
         motor.CameraRotate(_cameraRotation);
 
-		//Apply thruster force
+
 		Vector3 _thrusterForce = Vector3.zero;
-		if (Input.GetKey (KeyCode.Space)) {
-			_thrusterForce = Vector3.up * thrusterForce;
-			//	setJointSettings (0);
-			joint = null;
-		} else {
-			if (joint == null) {
-				joint = GetComponent<ConfigurableJoint> ();
-				setJointSettings (jointSpring);
+		/*if (Input.GetKey (KeyCode.Space)) {
+			if (thrusterPower >= 0) {
+				_thrusterForce = Vector3.up * thrusterForce;
+				gameObject.GetComponent<ConfigurableJoint> ().yDrive = new JointDrive{ positionSpring=jointSpring,maximumForce=0};
+				thrusterPower -= Time.deltaTime;
+				
+			
+			} else {
+				gameObject.GetComponent<ConfigurableJoint> ().yDrive = new JointDrive{ positionSpring=jointSpring,maximumForce=1000};
+				if (thrusterPower <= 3f) {
+					thrusterPower += Time.deltaTime;
+				}
 			}
+		
+		} else {
+			gameObject.GetComponent<ConfigurableJoint> ().yDrive = new JointDrive {positionSpring=jointSpring,maximumForce=1000};
+		}*/
+		if (Input.GetKey (KeyCode.Space)) 
+		{
+			_thrusterForce = Vector3.up * thrusterForce;
+
+
 		}
-	
-		//Motor will apply force 
+
 
 		motor.applyThrusterForce (_thrusterForce);
     }
 
 	private void setJointSettings(float _jointSpring)
 	{
-		joint.yDrive = new JointDrive { mode=jointMode,
+		joint.yDrive = new JointDrive {
 			positionSpring=jointSpring,
 			maximumForce=jointMaxForce
 		};
